@@ -4,9 +4,17 @@ export default class cadastroPage {
   campoSenha = '[name="password"]';
   campoConfirmSenha = '[name="confirmPassword"]';
   buttonCadastrar = ".account-save-button";
+  erroCampos = ".input-error";
+  janela = ".modal-body";
 
   typeNome(nome) {
-    cy.get(this.campoNome).type(nome);
+    cy.get(this.campoNome).then(function(campo){
+      if (nome === "vazio") {
+        cy.get(campo).type("   ");
+      } else {
+        cy.get(campo).type(nome);
+      }
+    });
   }
   typeEmail(email) {
     cy.get(this.campoEmail).type(email);

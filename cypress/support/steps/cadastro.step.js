@@ -1,7 +1,7 @@
 import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
 import inicialPage from "..//pages/paginaInicial.page";
 import cadastroPage from "../pages/cadastro.page";
-import { fakerPT_BR } from "@faker-js/faker";
+import { FinanceModule, fakerPT_BR } from "@faker-js/faker";
 const paginaInicial = new inicialPage();
 const paginaCadastro = new cadastroPage();
 
@@ -9,11 +9,25 @@ Given("que me encontro na area de cadastro", function () {
   cy.visit("https://raromdb-frontend-c7d7dc3305a0.herokuapp.com");
   paginaInicial.clickRegistro();
 });
+Given("que ja existe um usuario cadastrado", function () {
+  cy.intercept("POST", "https://raromdb-3c39614e42d4.herokuapp.com/api/users", {
+    statusCode: 409,
+    fixture: "/mocks/userExistente",
+  });
+});
 
-When("Preencho o campo nome {string}",function(nome){
-    paginaCadastro.typeNome(nome)
-})
+When("Preencho o campo nome {string}", function (nome) {
+  paginaCadastro.typeNome(nome);
+});
+When("Preencho o campo nome com um novo nome", function () {
+  let nome = fakerPT_BR.person.fullName();
+  paginaCadastro.typeNome(nome);
+});
 When("preencho o campo email com um email valido {string}", function (email) {
+  paginaCadastro.typeEmail(email);
+});
+When("preencho o campo email com um novo email", function () {
+  let email = fakerPT_BR.internet.email();
   paginaCadastro.typeEmail(email);
 });
 When("preencho o campo senha", function () {
@@ -25,8 +39,54 @@ When("preencho o campo confirmação de senha", function () {
 When("confirmo a operacao", function () {
   paginaCadastro.clickCadastrar();
 });
+When(
+  "preencho o campo email com um email invalido {string}",
+  function (emailErrado) {
+    paginaCadastro.typeEmail(emailErrado);
+  }
+);
+When("faco um cadastro valido de um novo usuario", function () {
+  let emailF;
+  cy.criaUsuario().then(function (data) {
+    emailF = data.userEmail;
+  });
+});
+When("faco o login", function () {
+  cy.visit("https://raromdb-frontend-c7d7dc3305a0.herokuapp.com");
+  paginaInicial.clickLogin();
+  paginaInicial.typeEmail(emailF);
+  paginaInicial.typeSenha("123456");
+  paginaInicial.clickLoginButton();
+});
 
-Then("o sistema deve apresentar o erro {string} e nao finalizar o cadastro", function (erro) {
-  cy.get(".input-error").should("be.visible");
-  cy.get(".input-error").invoke("text").should("equal", erro);
+Then(
+  "o sistema deve apresentar o erro {string} e nao finalizar o cadastro",
+  function (erro) {
+    cy.get(paginaCadastro.erroCampos).should("be.visible");
+    cy.get(paginaCadastro.erroCampos).invoke("text").should("equal", erro);
+  }
+);
+Then(
+  "o sistema deve apresentar um erro dizendo que o usuario ja existe",
+  function () {
+    cy.get(paginaCadastro.janela).should("be.visible");
+    cy.get(paginaCadastro.janela).should("contain", "Falha no cadastro.");
+    cy.get(paginaCadastro.janela).should(
+      "contain",
+      "E-mail já cadastrado. Utilize outro e-mail"
+    );
+  }
+);
+Then("o sistema deve apresentar um erro de email invalido", function () {
+  cy.get(paginaCadastro.janela).should("be.visible");
+  cy.get(paginaCadastro.janela).should("contain", "Falha no cadastro.");
+  cy.get(paginaCadastro.janela).should(
+    "contain",
+    "Não foi possível cadastrar o usuário."
+  );
+});
+Then("o sistema deve concluir o cadastro corretamente", function () {
+  cy.get(paginaCadastro.janela).should("be.visible");
+  cy.get(paginaCadastro.janela).should("contain", "Sucesso");
+  cy.get(paginaCadastro.janela).should("contain", "Cadastro realizado!");
 });

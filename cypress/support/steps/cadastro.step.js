@@ -1,9 +1,13 @@
 import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
-import inicialPage from "..//pages/paginaInicial.page";
+import { fakerPT_BR } from "@faker-js/faker";
+import inicialPage from "../pages/paginaInicial.page";
 import cadastroPage from "../pages/cadastro.page";
-import { FinanceModule, fakerPT_BR } from "@faker-js/faker";
+import loginPage from "../pages/login.page";
+import perfilPage from "../pages/perfil.page";
 const paginaInicial = new inicialPage();
 const paginaCadastro = new cadastroPage();
+const paginaLogin = new loginPage();
+const paginaPerfil = new perfilPage();
 
 Given("que me encontro na area de cadastro", function () {
   cy.visit("https://raromdb-frontend-c7d7dc3305a0.herokuapp.com");
@@ -48,15 +52,16 @@ When(
 When("faco um cadastro valido de um novo usuario", function () {
   let emailF;
   cy.criaUsuario().then(function (data) {
-    emailF = data.userEmail;
+    cy.wrap((emailF = data.userEmail)).as("emailV");
   });
 });
 When("faco o login", function () {
   cy.visit("https://raromdb-frontend-c7d7dc3305a0.herokuapp.com");
   paginaInicial.clickLogin();
-  paginaInicial.typeEmail(emailF);
-  paginaInicial.typeSenha("123456");
-  paginaInicial.clickLoginButton();
+  paginaLogin.typeEmail(this.emailV);
+  paginaLogin.typeSenha("123456");
+  paginaLogin.clickLoginButton();
+  paginaLogin.clickPerfil();
 });
 
 Then(
@@ -89,4 +94,9 @@ Then("o sistema deve concluir o cadastro corretamente", function () {
   cy.get(paginaCadastro.janela).should("be.visible");
   cy.get(paginaCadastro.janela).should("contain", "Sucesso");
   cy.get(paginaCadastro.janela).should("contain", "Cadastro realizado!");
+});
+Then("posso verificar que este usuario foi cadastrado como comum", function () {
+  paginaLogin.clickPerfil();
+  paginaPerfil.clickGerenciar();
+  cy.get(paginaPerfil.campoTipoUser).should("contain", "Comum");
 });

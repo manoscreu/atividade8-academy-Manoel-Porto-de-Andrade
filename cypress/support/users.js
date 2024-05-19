@@ -13,7 +13,8 @@ Cypress.Commands.add("criaUsuario", function () {
     }
   ).then(function () {
     return {
-      userEmail: email
+      userEmail: email,
+      userName: nome
     };
   });
 });

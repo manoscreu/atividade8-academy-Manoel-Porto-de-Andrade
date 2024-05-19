@@ -2,7 +2,9 @@ export default class loginPage {
   campoEmail = '[name="email"]';
   campoSenha = '[name="password"]';
   buttonLogin = ".login-button";
-  buttonPerfil = '[href="/profile"]'
+  buttonPerfil = '[href="/profile"]';
+  campoErro = ".input-error";
+  modal = ".modal-body";
 
   typeEmail(email) {
     cy.get(this.campoEmail).type(email);
@@ -16,5 +18,4 @@ export default class loginPage {
   clickPerfil() {
     cy.get(this.buttonPerfil).click();
   }
-  
 }

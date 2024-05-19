@@ -1,4 +1,9 @@
-import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
+import {
+  Given,
+  When,
+  Then,
+  Before,
+} from "@badeball/cypress-cucumber-preprocessor";
 import { fakerPT_BR } from "@faker-js/faker";
 import inicialPage from "../pages/paginaInicial.page";
 import cadastroPage from "../pages/cadastro.page";
@@ -25,6 +30,7 @@ When("Preencho o campo nome {string}", function (nome) {
 });
 When("Preencho o campo nome com um novo nome", function () {
   let nome = fakerPT_BR.person.fullName();
+  cy.wrap(nome).as("nomeA")
   paginaCadastro.typeNome(nome);
 });
 When("preencho o campo email com um email valido {string}", function (email) {
@@ -32,6 +38,7 @@ When("preencho o campo email com um email valido {string}", function (email) {
 });
 When("preencho o campo email com um novo email", function () {
   let email = fakerPT_BR.internet.email();
+  cy.wrap(email).as("emailA")
   paginaCadastro.typeEmail(email);
 });
 When("preencho o campo senha", function () {
@@ -41,6 +48,10 @@ When("preencho o campo confirmação de senha", function () {
   paginaCadastro.typeConfirmSenha("123456");
 });
 When("confirmo a operacao", function () {
+  cy.intercept(
+    "POST",
+    "https://raromdb-3c39614e42d4.herokuapp.com/api/users"
+  ).as("postUser");
   paginaCadastro.clickCadastrar();
 });
 When(
@@ -49,19 +60,17 @@ When(
     paginaCadastro.typeEmail(emailErrado);
   }
 );
-When("faco um cadastro valido de um novo usuario", function () {
-  let emailF;
-  cy.criaUsuario().then(function (data) {
-    cy.wrap((emailF = data.userEmail)).as("emailV");
+
+When("o usuario sera do tipo 0", function () {
+  cy.wait("@postUser").then(function (interceptado) {
+    const corpo = interceptado.response.body;
+    const nome = corpo.name;
+    const email = corpo.email;
+    const type = corpo.type;
+    cy.wrap(nome).should("equal", this.nomeA)
+    cy.wrap(email).should("equal", this.emailA)
+    cy.wrap(type).should("equal", 0);
   });
-});
-When("faco o login", function () {
-  cy.visit("https://raromdb-frontend-c7d7dc3305a0.herokuapp.com");
-  paginaInicial.clickLogin();
-  paginaLogin.typeEmail(this.emailV);
-  paginaLogin.typeSenha("123456");
-  paginaLogin.clickLoginButton();
-  paginaLogin.clickPerfil();
 });
 
 Then(
@@ -94,9 +103,4 @@ Then("o sistema deve concluir o cadastro corretamente", function () {
   cy.get(paginaCadastro.janela).should("be.visible");
   cy.get(paginaCadastro.janela).should("contain", "Sucesso");
   cy.get(paginaCadastro.janela).should("contain", "Cadastro realizado!");
-});
-Then("posso verificar que este usuario foi cadastrado como comum", function () {
-  paginaLogin.clickPerfil();
-  paginaPerfil.clickGerenciar();
-  cy.get(paginaPerfil.campoTipoUser).should("contain", "Comum");
 });

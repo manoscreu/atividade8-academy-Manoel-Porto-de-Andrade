@@ -10,6 +10,7 @@ module.exports = defineConfig({
   e2e: {
     env: {
       TAGS: "not @ignore",
+      
     },
     specPattern: "cypress/e2e/**/*.feature",
     async setupNodeEvents(on, config) {

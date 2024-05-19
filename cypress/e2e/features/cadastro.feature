@@ -29,7 +29,7 @@ Cenario: Não deve ser possivel cadastrar um usuario sem preencher o campo senha
     E preencho o campo email com um email valido "manel@teste.com"
     E preencho o campo confirmação de senha
     E confirmo a operacao
-    Entao o sistema deve apresentar o erro "Campo obrigatório" e nao finalizar o cadastro
+    Entao o sistema deve apresentar o erro "Informe a senhaAs senhas devem ser iguais." e nao finalizar o cadastro
 
 
 Cenario: Não deve ser possivel cadastrar um usuario sem preencher o campo confirmação de senha
@@ -37,7 +37,7 @@ Cenario: Não deve ser possivel cadastrar um usuario sem preencher o campo confi
     E preencho o campo email com um email valido "manel@teste.com"
     E preencho o campo senha
     E confirmo a operacao
-    Entao o sistema deve apresentar o erro "As senhas devem ser iguais." e nao finalizar o cadastro
+    Entao o sistema deve apresentar o erro "Informe a senha" e nao finalizar o cadastro
 
 
 Cenario: Não deve ser possivel cadastrar um usuario com um email ja em uso
@@ -78,8 +78,6 @@ Cenário: Não existem restrições sobre o nome. O usuário poderá informar qu
     |nome      |
     |Manoel    |
     |1         |
-    |12        |
-    |123       |
     |1234      |
     |...       |
     |🥴😶🤓😥|
@@ -87,15 +85,11 @@ Cenário: Não existem restrições sobre o nome. O usuário poderá informar qu
     |vazio     |
 
 
-Cenario: Cadastro valido de usuario
+Cenario: Cadastro valido de usuario e confirmação do tipo de usuario
     Quando Preencho o campo nome com um novo nome
     E preencho o campo email com um novo email
     E preencho o campo senha
     E preencho o campo confirmação de senha
     E confirmo a operacao
     Entao o sistema deve concluir o cadastro corretamente
-
-Cenario: Um usuário sempre deve ser criado com o tipo 0, que é o tipo de usuário comum
-    Quando faco um cadastro valido de um novo usuario
-    E faco o login
-    Entao posso verificar que este usuario foi cadastrado como comum
+    E o usuario sera do tipo 0

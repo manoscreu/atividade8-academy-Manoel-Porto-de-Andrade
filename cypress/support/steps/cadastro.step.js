@@ -1,18 +1,10 @@
-import {
-  Given,
-  When,
-  Then,
-  Before,
-} from "@badeball/cypress-cucumber-preprocessor";
+import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
 import { fakerPT_BR } from "@faker-js/faker";
 import inicialPage from "../pages/paginaInicial.page";
 import cadastroPage from "../pages/cadastro.page";
-import loginPage from "../pages/login.page";
-import perfilPage from "../pages/perfil.page";
 const paginaInicial = new inicialPage();
 const paginaCadastro = new cadastroPage();
-const paginaLogin = new loginPage();
-const paginaPerfil = new perfilPage();
+
 
 Given("que me encontro na area de cadastro", function () {
   cy.visit("https://raromdb-frontend-c7d7dc3305a0.herokuapp.com");
@@ -30,7 +22,7 @@ When("Preencho o campo nome {string}", function (nome) {
 });
 When("Preencho o campo nome com um novo nome", function () {
   let nome = fakerPT_BR.person.fullName();
-  cy.wrap(nome).as("nomeA")
+  cy.wrap(nome).as("nomeA");
   paginaCadastro.typeNome(nome);
 });
 When("preencho o campo email com um email valido {string}", function (email) {
@@ -38,7 +30,7 @@ When("preencho o campo email com um email valido {string}", function (email) {
 });
 When("preencho o campo email com um novo email", function () {
   let email = fakerPT_BR.internet.email();
-  cy.wrap(email).as("emailA")
+  cy.wrap(email).as("emailA");
   paginaCadastro.typeEmail(email);
 });
 When("preencho o campo senha", function () {
@@ -67,8 +59,8 @@ When("o usuario sera do tipo 0", function () {
     const nome = corpo.name;
     const email = corpo.email;
     const type = corpo.type;
-    cy.wrap(nome).should("equal", this.nomeA)
-    cy.wrap(email).should("equal", this.emailA)
+    cy.wrap(nome).should("equal", this.nomeA);
+    cy.wrap(email).should("equal", this.emailA);
     cy.wrap(type).should("equal", 0);
   });
 });

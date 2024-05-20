@@ -50,7 +50,7 @@ Cenario: Não deve ser possivel cadastrar um usuario com um email ja em uso
     Entao o sistema deve apresentar um erro dizendo que o usuario ja existe
 
 
-Cenário: Não deve ser possivel cadastrar um usuario com um email invalido
+Esquema do Cenário: Não deve ser possivel cadastrar um usuario com um email invalido
     Quando Preencho o campo nome "Manoel"
     E preencho o campo email com um email invalido "<email>"
     E preencho o campo senha
@@ -67,7 +67,7 @@ Cenário: Não deve ser possivel cadastrar um usuario com um email invalido
     | .com             |
 
 
-Cenário: Não existem restrições sobre o nome. O usuário poderá informar qualquer nome na plataforma.
+Esquema do Cenário: Não existem restrições sobre o nome. O usuário poderá informar qualquer nome na plataforma.
     Quando Preencho o campo nome "<nome>"
     E preencho o campo email com um novo email
     E preencho o campo senha
